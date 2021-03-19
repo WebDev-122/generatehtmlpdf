@@ -3,7 +3,8 @@ import { createEditor } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 import Box from "@material-ui/core/Box";
 
-import { Element, Leaf } from "./RichEditor";
+import Element from './Element';
+import Leaf from './Leaf';
 
 const ReadOnly = ({ initialValue, borderSize = 0 }) => {
   const renderElement = useCallback(props => <Element {...props} />, []);
