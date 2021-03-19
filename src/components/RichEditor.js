@@ -14,6 +14,7 @@ import LooksTwoIcon from "@material-ui/icons/LooksTwo";
 import FormatQuoteIcon from "@material-ui/icons/FormatQuote";
 import FormatListNumberedIcon from "@material-ui/icons/FormatListNumbered";
 import FormatListBulletedIcon from "@material-ui/icons/FormatListBulleted";
+import EditIcon from "@material-ui/icons/Edit";
 import Divider from "@material-ui/core/Divider";
 
 import BlockButton from './BlockButton';
@@ -71,7 +72,7 @@ const RichEditor = ({ value, setValue }) => {
             <FormatListBulletedIcon />
           </BlockButton>
           <BlockButton format="code-view">
-            <span>{'</>'}</span>
+            <EditIcon />
           </BlockButton>
         </Toolbar>
         <Box pl={1}>

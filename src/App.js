@@ -64,8 +64,6 @@ function App() {
     EDIT_TAB_ID: 3
   }), [])
 
-
-
   const [colData, setColData] = useState([])
   const [chooseTab, setChooseTab] = useState(TAB_STATE.EDIT_TAB_ID)
 

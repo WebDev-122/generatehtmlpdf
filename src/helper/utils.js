@@ -2,8 +2,6 @@ import { Editor, Transforms } from "slate";
 
 const LIST_TYPES = ["numbered-list", "bulleted-list"];
 
-
-
 const toggleBlock = (editor, format) => {
   const isActive = isBlockActive(editor, format);
   const isList = LIST_TYPES.includes(format);
@@ -46,4 +44,4 @@ const isMarkActive = (editor, format) => {
   return marks ? marks[format] === true : false;
 };
 
-export  { toggleBlock, toggleMark, isBlockActive, isMarkActive}
+export  { toggleBlock, toggleMark, isBlockActive, isMarkActive };
