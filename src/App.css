@@ -48,3 +48,12 @@
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
+.import-file-button:disabled {
+  opacity: 0.6;
+}
+.jodit-toolbar-button_image {
+  display: none;
+}
+.cls-hidden{
+  display: none;
+}

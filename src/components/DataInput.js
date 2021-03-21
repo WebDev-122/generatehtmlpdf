@@ -1,7 +1,7 @@
 import React, {useRef, useCallback} from 'react';
 import { Button } from '@material-ui/core';
 
-const DataInput = ({handleFile}) => {
+const DataInput = ({handleFile, disableState}) => {
   const fileInput = useRef();
 
   const handleChange = useCallback((e) => {
@@ -11,7 +11,7 @@ const DataInput = ({handleFile}) => {
 
   return (
     <>
-      <Button className="import-file-button" onClick={() => fileInput.current.click()}> Import File </Button>
+      <Button className="import-file-button" onClick={() => fileInput.current.click()} disabled={disableState}> Import File </Button>
       <input
         ref={fileInput}
         type="file"

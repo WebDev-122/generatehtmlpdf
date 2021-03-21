@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { uuid } from 'lodash-uuid';
-import _ from 'lodash';
 
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -14,8 +13,7 @@ import {
   makeStyles,
   Button,
   Grid,
-  ButtonGroup,
-  Paper
+  ButtonGroup
 } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -23,11 +21,11 @@ import CardContent from '@material-ui/core/CardContent';
 import PictureAsPdf from '@material-ui/icons/PictureAsPdf';
 import SubjectOutlinedIcon from '@material-ui/icons/SubjectOutlined';
 import AddIcon from '@material-ui/icons/Add';
-import './App.css';
-import RichEditor from 'components/RichEditor';
-import ReadOnly from 'components/ReadOnly';
 import XLSX from "xlsx";
 import DataInput from './components/DataInput';
+import Editor from './components/Editor';
+
+import './App.css';
 
 const appbarStyles = makeStyles((theme) => ({
   root: {
@@ -74,24 +72,15 @@ function App() {
   const addRowCount = useCallback((e) => {
     setColData(d => [...d, {
       id: uuid(),
-      content: [{
-        type: "paragraph",
-        children: [{ text: "" }]
-      }]
+      content: ''
     }, {
       id: uuid(),
-      content: [{
-        type: "paragraph",
-        children: [{ text: "" }]
-      }]
+      content: ''
     }, {
       id: uuid(),
-      content: [{
-        type: "paragraph",
-        children: [{ text: "" }]
-      }]
+      content: ''
     }]);
-  }, [])
+  }, []);
 
   //add rows from an excel file
   const addRowsFromExcel = useCallback((excelData) => {
@@ -99,22 +88,13 @@ function App() {
       const excelDataRow = excelData[key];
       setColData(d => [...d, {
         id: uuid(),
-        content: [{
-          type: "paragraph",
-          children: [{ text: excelDataRow[0] ? `${excelDataRow[0]}` : "" }]
-        }]
+        content: excelDataRow[0] ? `${excelDataRow[0]}` : ''
       }, {
         id: uuid(),
-        content: [{
-          type: "paragraph",
-          children: [{ text: excelDataRow[1] ? `${excelDataRow[1]}` : "" }]
-        }]
+        content: excelDataRow[1] ? `${excelDataRow[1]}` : ''
       }, {
         id: uuid(),
-        content: [{
-          type: "paragraph",
-          children: [{ text: excelDataRow[2] ? `${excelDataRow[2]}` : "" }]
-        }]
+        content: excelDataRow[2] ? `${excelDataRow[2]}` : ''
       }]);
     }
   }, []);
@@ -164,28 +144,6 @@ function App() {
     tempEl.click();
   }, []);
 
-  //  choose handle
-  const [chooseItemId, setChooseItemId] = useState('')
-  const [chooseInput, setChooseInput] = useState([{
-    type: "paragraph",
-    children: [{ text: "" }]
-  }]);
-
-  const handleTextEditorClick = useCallback((targetId) => {
-    const item = _.find(colData, { id: targetId });
-    if (item) {
-      setChooseItemId(item.id);
-      setChooseInput(item.content)
-    }
-  }, [colData]);
-
-  const handleUpdateChooseText = useCallback((value) => {
-    if (chooseItemId) {
-      setColData(d => d.map(item => item.id === chooseItemId ? { ...item, content: value } : item))
-    }
-    setChooseInput(value)
-  }, [chooseItemId]);
-
   //event which handles to import an excel file
   const handleFile = useCallback((file) => {
     const reader = new FileReader();
@@ -210,7 +168,7 @@ function App() {
               Generate HTML & PDF
             </Typography>
             <ButtonGroup variant="contained" color="primary">
-              <DataInput handleFile={handleFile} />
+              <DataInput handleFile={handleFile} disableState={chooseTab !== TAB_STATE.HTML_TAB_ID ? false : true}/>
               <Button id={TAB_STATE.EDIT_TAB_ID} onClick={() => onTABClick(TAB_STATE.EDIT_TAB_ID)} >EDIT</Button>
               <Button id={TAB_STATE.HTML_TAB_ID} onClick={() => onTABClick(TAB_STATE.HTML_TAB_ID)} >HTML</Button>
             </ButtonGroup>
@@ -225,18 +183,15 @@ function App() {
       </Container>
 
       <Container className={contentClasses.root}>
-        <Grid container>
-          <Grid item xs={9}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
             <Card variant="outlined">
-              <CardContent id="pdfdiv" elevation={3} style={{ padding: '20px' }}>
+              <CardContent id="pdfdiv" elevation={4} style={{ padding: '20px' }}>
                 <Container>
-                  <Grid container>
+                  <Grid container spacing={2}>
                     {colData.map((item) => (
-                      <Grid item xs={4} key={item.id} onClick={() => handleTextEditorClick(item.id)}>
-                        <ReadOnly
-                          initialValue={item.content}
-                          borderSize={(chooseTab === TAB_STATE.EDIT_TAB_ID) ? 1 : 0}
-                        />
+                      <Grid item xs={4} key={item.id}>
+                        <Editor htmlViewState={chooseTab===TAB_STATE.HTML_TAB_ID ? true : false} initialValue={item.content}/>
                       </Grid>
                     ))}
                     {chooseTab === TAB_STATE.EDIT_TAB_ID && (
@@ -250,11 +205,6 @@ function App() {
                 </Container>
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item xs={3} style={{ padding: '20px' }}>
-            <Paper elevation={3}>
-              {!!chooseItemId && <RichEditor value={chooseInput} setValue={handleUpdateChooseText} ></RichEditor>}
-            </Paper>
           </Grid>
         </Grid>
       </Container>
