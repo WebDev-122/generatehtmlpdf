@@ -26,7 +26,8 @@ import AddIcon from '@material-ui/icons/Add';
 import './App.css';
 import RichEditor from 'components/RichEditor';
 import ReadOnly from 'components/ReadOnly';
-
+import XLSX from "xlsx";
+import DataInput from './components/DataInput';
 
 const appbarStyles = makeStyles((theme) => ({
   root: {
@@ -92,11 +93,39 @@ function App() {
     }]);
   }, [])
 
+  //add rows from an excel file
+  const addRowsFromExcel = useCallback((excelData) => {
+    for (const key in excelData) {
+      const excelDataRow = excelData[key];
+      setColData(d => [...d, {
+        id: uuid(),
+        content: [{
+          type: "paragraph",
+          children: [{ text: excelDataRow[0] ? `${excelDataRow[0]}` : "" }]
+        }]
+      }, {
+        id: uuid(),
+        content: [{
+          type: "paragraph",
+          children: [{ text: excelDataRow[1] ? `${excelDataRow[1]}` : "" }]
+        }]
+      }, {
+        id: uuid(),
+        content: [{
+          type: "paragraph",
+          children: [{ text: excelDataRow[2] ? `${excelDataRow[2]}` : "" }]
+        }]
+      }]);
+    }
+  }, []);
+
+  //event which tabs are clicked (edit & html)
   const onTABClick = useCallback((targetId) => {
     if (targetId === chooseTab) return;
     setChooseTab(targetId);
   }, [chooseTab])
 
+  //event which exports as pdf
   const onPrintDocument = useCallback(() => {
     const input = document.getElementById('pdfdiv');
     html2canvas(input)
@@ -111,6 +140,7 @@ function App() {
       });
   }, []);
 
+  //event which exports as html
   const onDownloadHTML = useCallback(() => {
     const doc = document.implementation.createHTMLDocument("DownloadDoc");
     const styles = document.getElementsByTagName('style');
@@ -133,6 +163,7 @@ function App() {
     tempEl.download = 'page.html';
     tempEl.click();
   }, []);
+
   //  choose handle
   const [chooseItemId, setChooseItemId] = useState('')
   const [chooseInput, setChooseInput] = useState([{
@@ -146,14 +177,30 @@ function App() {
       setChooseItemId(item.id);
       setChooseInput(item.content)
     }
-  }, [colData])
+  }, [colData]);
 
   const handleUpdateChooseText = useCallback((value) => {
     if (chooseItemId) {
       setColData(d => d.map(item => item.id === chooseItemId ? { ...item, content: value } : item))
     }
     setChooseInput(value)
-  }, [chooseItemId])
+  }, [chooseItemId]);
+
+  //event which handles to import an excel file
+  const handleFile = useCallback((file) => {
+    const reader = new FileReader();
+    const rABS = !!reader.readAsBinaryString;
+    reader.onload = ({ target: { result } }) => {
+      const wb = XLSX.read(result, { type: rABS ? "binary" : "array" });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      addRowsFromExcel(data);
+    };
+    if (rABS) reader.readAsBinaryString(file);
+    else reader.readAsArrayBuffer(file);
+  }, [addRowsFromExcel]);
+
   return (
     <Container>
       <Container className={appClasses.root}>
@@ -163,6 +210,7 @@ function App() {
               Generate HTML & PDF
             </Typography>
             <ButtonGroup variant="contained" color="primary">
+              <DataInput handleFile={handleFile} />
               <Button id={TAB_STATE.EDIT_TAB_ID} onClick={() => onTABClick(TAB_STATE.EDIT_TAB_ID)} >EDIT</Button>
               <Button id={TAB_STATE.HTML_TAB_ID} onClick={() => onTABClick(TAB_STATE.HTML_TAB_ID)} >HTML</Button>
             </ButtonGroup>
