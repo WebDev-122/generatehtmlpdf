@@ -10,7 +10,7 @@ const Editor = ({initialValue, htmlViewState}) => {
   }
 
   const styleEditor = useMemo(() => htmlViewState ? {display: 'none'} : {}, [htmlViewState]);
-  const styleDiv = useMemo(() => htmlViewState ? {} : {display: 'none'}, [htmlViewState]);
+  const styleDiv = useMemo(() => htmlViewState ? {wordWrap: 'break-word', width: '100%'} : {display: 'none'}, [htmlViewState]);
 
   return (
     <div className="text-editor">
