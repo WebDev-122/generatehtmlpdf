@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useMemo} from 'react';
 import JoditEditor from "jodit-react";
 
 const Editor = ({initialValue, htmlViewState}) => {
@@ -8,14 +8,14 @@ const Editor = ({initialValue, htmlViewState}) => {
     readonly: false, // all options from https://xdsoft.net/jodit/doc/
     buttons: ['source']
   }
-  
-  const clsName = htmlViewState ? "" : "cls-hidden"
-  console.log(clsName);
+
+  const styleEditor = useMemo(() => htmlViewState ? {display: 'none'} : {}, [htmlViewState]);
+  const styleDiv = useMemo(() => htmlViewState ? {} : {display: 'none'}, [htmlViewState]);
 
   return (
     <div className="text-editor">
-      <div dangerouslySetInnerHTML={{__html: content}} className={htmlViewState ? "" : "cls-hidden"}/>
-      <div className={htmlViewState ?  "cls-hidden" : ""}>
+      <div dangerouslySetInnerHTML={{__html: content}} style={styleDiv}/>
+      <div style={styleEditor}>
         <JoditEditor
           value={content}
           config={config}
