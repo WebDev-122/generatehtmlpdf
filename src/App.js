@@ -73,12 +73,6 @@ function App() {
     setColData(d => [...d, {
       id: uuid(),
       content: ''
-    }, {
-      id: uuid(),
-      content: ''
-    }, {
-      id: uuid(),
-      content: ''
     }]);
   }, []);
 
@@ -89,12 +83,6 @@ function App() {
       setColData(d => [...d, {
         id: uuid(),
         content: excelDataRow[0] ? `${excelDataRow[0]}` : ''
-      }, {
-        id: uuid(),
-        content: excelDataRow[1] ? `${excelDataRow[1]}` : ''
-      }, {
-        id: uuid(),
-        content: excelDataRow[2] ? `${excelDataRow[2]}` : ''
       }]);
     }
   }, []);
@@ -122,7 +110,7 @@ function App() {
 
   //event which exports as html
   const onDownloadHTML = useCallback(() => {
-    const doc = document.implementation.createHTMLDocument("DownloadDoc");
+    const doc = document.implementation.createHTMLDocument('DownloadDoc');
     const styles = document.getElementsByTagName('style');
     const newDiv = document.createElement('div');
     const newStyle = document.createElement('style');
@@ -132,18 +120,32 @@ function App() {
     for (const style of styles) {
       styleContent += style.innerHTML;
     }
-
     newStyle.innerHTML = styleContent;
     doc.head.appendChild(newStyle);
     doc.body.appendChild(newDiv);
 
     const tempEl = document.createElement('a');
-    tempEl.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(doc.documentElement.innerHTML);
+    tempEl.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(doc.documentElement.innerHTML);
     tempEl.target = '_blank';
     tempEl.download = 'page.html';
     tempEl.click();
   }, []);
 
+  const encodeHTML = (str) => {
+    var aStr = str.split(''),
+        i = aStr.length,
+        aRet = [];
+
+      while (--i) {
+        var iC = aStr[i].charCodeAt();
+        if (iC < 65 || iC > 127 || (iC>90 && iC<97)) {
+          aRet.push('&#'+iC+';');
+        } else {
+          aRet.push(aStr[i]);
+        }
+      }
+    return aRet.reverse().join('');
+  }
   //event which handles to import an excel file
   const handleFile = useCallback((file) => {
     const reader = new FileReader();
@@ -190,14 +192,14 @@ function App() {
                 <Container>
                   <Grid container spacing={2}>
                     {colData.map((item) => (
-                      <Grid item xs={4} key={item.id}>
+                      <Grid item xs={12} key={item.id}>
                         <Editor htmlViewState={chooseTab===TAB_STATE.HTML_TAB_ID ? true : false} initialValue={item.content}/>
                       </Grid>
                     ))}
                     {chooseTab === TAB_STATE.EDIT_TAB_ID && (
                       <Grid item sm={12}>
-                        <Button variant="contained" color="primary" href="#contained-buttons" onClick={addRowCount}>
-                          <AddIcon></AddIcon>Add Column
+                        <Button variant="contained" color="primary" onClick={addRowCount}>
+                          <AddIcon></AddIcon>Add Row
                         </Button>
                       </Grid>
                     )}

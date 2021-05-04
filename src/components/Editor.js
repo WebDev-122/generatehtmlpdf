@@ -6,7 +6,9 @@ const Editor = ({initialValue, htmlViewState}) => {
 
 	const config = {
     readonly: false, // all options from https://xdsoft.net/jodit/doc/
-    buttons: ['source']
+    // buttons: ['source'],
+    // maxWidth: 800,
+    // minWidth: 200
   }
 
   const styleEditor = useMemo(() => htmlViewState ? {display: 'none'} : {}, [htmlViewState]);
