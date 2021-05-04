@@ -110,42 +110,29 @@ function App() {
 
   //event which exports as html
   const onDownloadHTML = useCallback(() => {
-    const doc = document.implementation.createHTMLDocument('DownloadDoc');
-    const styles = document.getElementsByTagName('style');
-    const newDiv = document.createElement('div');
-    const newStyle = document.createElement('style');
-    newDiv.innerHTML = document.getElementById('pdfdiv').innerHTML;
+    const doc = document.implementation.createHTMLDocument("DownloadDoc")
+    const styles = document.getElementsByTagName("style")
+    const newDiv = document.createElement("div")
+    const newStyle = document.createElement("style")
+    newDiv.innerHTML = document.getElementById("pdfdiv").innerHTML
 
-    let styleContent = '';
+    let styleContent = ""
     for (const style of styles) {
-      styleContent += style.innerHTML;
+      styleContent += style.innerHTML
     }
-    newStyle.innerHTML = styleContent;
-    doc.head.appendChild(newStyle);
-    doc.body.appendChild(newDiv);
+    newStyle.innerHTML = styleContent
+    doc.head.appendChild(newStyle)
+    doc.body.appendChild(newDiv)
 
-    const tempEl = document.createElement('a');
-    tempEl.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(doc.documentElement.innerHTML);
-    tempEl.target = '_blank';
-    tempEl.download = 'page.html';
-    tempEl.click();
+    const tempEl = document.createElement("a")
+    tempEl.href =
+      "data:text/html;charset=utf-8," +
+      encodeURIComponent(doc.documentElement.innerHTML);
+    tempEl.target = "_blank"
+    tempEl.download = "page.html"
+    tempEl.click()
   }, []);
 
-  const encodeHTML = (str) => {
-    var aStr = str.split(''),
-        i = aStr.length,
-        aRet = [];
-
-      while (--i) {
-        var iC = aStr[i].charCodeAt();
-        if (iC < 65 || iC > 127 || (iC>90 && iC<97)) {
-          aRet.push('&#'+iC+';');
-        } else {
-          aRet.push(aStr[i]);
-        }
-      }
-    return aRet.reverse().join('');
-  }
   //event which handles to import an excel file
   const handleFile = useCallback((file) => {
     const reader = new FileReader();
