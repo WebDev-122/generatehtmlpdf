@@ -98,13 +98,21 @@ function App() {
     const input = document.getElementById('pdfdiv');
     html2canvas(input)
       .then((canvas) => {
-        const imgWidth = 200;
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4')
-        const position = 0;
-        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-        pdf.save("download.pdf");
+        // const imgWidth = 200;
+        // const imgHeight = canvas.height * imgWidth / canvas.width;
+        // const imgData = canvas.toDataURL('image/png');
+        // const position = 0;
+        // const pdf = new jsPDF('p', 'pt', 'a4');
+        // pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        // pdf.save("download.pdf");
+        const pdf = new jsPDF({
+          unit: "px",
+          format: "letter",
+          userUnit: "px",
+        })
+        pdf.html(input, { html2canvas: { scale: 0.57 } }).then(() => {
+          pdf.save("download.pdf")
+        })
       });
   }, []);
 
