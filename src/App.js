@@ -98,21 +98,25 @@ function App() {
     const input = document.getElementById('pdfdiv');
     html2canvas(input)
       .then((canvas) => {
-        // const imgWidth = 200;
-        // const imgHeight = canvas.height * imgWidth / canvas.width;
-        // const imgData = canvas.toDataURL('image/png');
-        // const position = 0;
-        // const pdf = new jsPDF('p', 'pt', 'a4');
-        // pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-        // pdf.save("download.pdf");
-        const pdf = new jsPDF({
-          unit: "px",
-          format: "letter",
-          userUnit: "px",
-        })
-        pdf.html(input, { html2canvas: { scale: 0.57 } }).then(() => {
-          pdf.save("download.pdf")
-        })
+        var imgWidth = 208
+        var pageHeight = 295
+        var imgHeight = (canvas.height * imgWidth) / canvas.width
+        var heightLeft = imgHeight
+
+        const contentDataURL = canvas.toDataURL('image/png')    
+        let pdf = new jsPDF('p', 'mm', 'a4'); // A4 size page of PDF    
+        var position = 0;
+        pdf.addImage(contentDataURL, "PNG", 0, position, imgWidth, imgHeight)
+
+        heightLeft -= pageHeight
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight
+          pdf.addPage()
+          pdf.addImage(contentDataURL, "PNG", 0, position, imgWidth, imgHeight)
+          heightLeft -= pageHeight
+        }  
+  
+        pdf.save('download.pdf'); // Generated PDF     
       });
   }, []);
 
@@ -121,6 +125,7 @@ function App() {
     const doc = document.implementation.createHTMLDocument("DownloadDoc")
     const styles = document.getElementsByTagName("style")
     const newDiv = document.createElement("div")
+    const newMeta = document.createElement("meta");
     const newStyle = document.createElement("style")
     newDiv.innerHTML = document.getElementById("pdfdiv").innerHTML
 
@@ -128,13 +133,16 @@ function App() {
     for (const style of styles) {
       styleContent += style.innerHTML
     }
+    newMeta["httpEquiv"] = "Content-Type"
+    newMeta["content"] = "text/html; charset=utf-8"
     newStyle.innerHTML = styleContent
+    doc.head.appendChild(newMeta);
     doc.head.appendChild(newStyle)
     doc.body.appendChild(newDiv)
 
     const tempEl = document.createElement("a")
     tempEl.href =
-      "data:text/html;charset=utf-8," +
+      "data:text/plain;charset=utf-8," +
       encodeURIComponent(doc.documentElement.innerHTML);
     tempEl.target = "_blank"
     tempEl.download = "page.html"
