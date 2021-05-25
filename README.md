@@ -1,5 +1,7 @@
 # Three Column Editor
 
+based on React
+
 https://elastic-ardinghelli-eafd42.netlify.app/
 
 use JoditEditor
